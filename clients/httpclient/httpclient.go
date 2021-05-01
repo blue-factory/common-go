@@ -1,7 +1,6 @@
 package httpclient
 
 import (
-	"log"
 	"net/http"
 	"time"
 )
@@ -23,15 +22,15 @@ func (cl *HTTPClient) Do(req *http.Request) (res *http.Response, err error) {
 	for i := 0; i < cl.MaxRetry; i++ {
 		res, err = cl.Client.Do(req)
 		if err != nil {
-			log.Printf("Failed request, attempt nummber %d. Retrying next time in %d seconds", i, cl.Delay)
+			cl.log.Infof("Failed request, attempt nummber %d. Retrying next time in %d seconds", i, cl.Delay)
 			time.Sleep(time.Second * time.Duration(cl.Delay))
 			continue
 		}
 		res, err = cl.Validate(res)
 		if err != nil {
-			log.Printf("Failed validation strategy, attempt #%d Retrying next time in %d seconds", i, cl.Delay)
-			log.Printf("http status received %d", res.StatusCode)
-			log.Printf("Requested URL=%s", req.URL.String())
+			cl.log.Infof("Failed validation strategy, attempt #%d Retrying next time in %d seconds", i, cl.Delay)
+			cl.log.Infof("http status received %d", res.StatusCode)
+			cl.log.Infof("Requested URL=%s", req.URL.String())
 			time.Sleep(time.Second * time.Duration(cl.Delay))
 			continue
 		}
@@ -39,6 +38,6 @@ func (cl *HTTPClient) Do(req *http.Request) (res *http.Response, err error) {
 		return res, nil
 	}
 
-	log.Printf("Max retry URL=%s", req.URL.String())
+	cl.log.Infof("Max retry URL=%s", req.URL.String())
 	return nil, err
 }
