@@ -17,6 +17,22 @@ type HTTPClient struct {
 	log      Logger
 }
 
+func NewHTTPClient(
+	cl *http.Client,
+	maxRetry int,
+	delay int,
+	validate ValidatorFunc,
+	log Logger,
+) *HTTPClient {
+	return &HTTPClient{
+		cl,
+		maxRetry,
+		delay,
+		validate,
+		log,
+	}
+}
+
 // Do ...
 func (cl *HTTPClient) Do(req *http.Request) (res *http.Response, err error) {
 	for i := 0; i < cl.MaxRetry; i++ {
